@@ -18,7 +18,7 @@ import (
 	_ "github.com/lib/pq"
 )
 
-const defaultPort = "8080"
+var defaultPort = os.Getenv("PORT")
 
 func getDSN() string {
 	return os.Getenv("POSTGRESQL_DSN")
