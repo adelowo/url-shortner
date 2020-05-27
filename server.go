@@ -13,6 +13,7 @@ import (
 	"github.com/adelowo/url-shortner/graph"
 	"github.com/adelowo/url-shortner/graph/generated"
 	"github.com/adelowo/url-shortner/handlers"
+	"github.com/friendsofgo/graphiql"
 	"github.com/go-chi/chi"
 	_ "github.com/lib/pq"
 )
@@ -46,11 +47,14 @@ func main() {
 		log.Fatalf("could not set up postgres connection... %v", err)
 	}
 
-	_ = postgres
-
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{
 		Database: postgres,
 	}}))
+
+	graphiqlHandler, err := graphiql.NewGraphiqlHandler("/query")
+	if err != nil {
+		panic(err)
+	}
 
 	mux := chi.NewMux()
 	mux.Handle("/", playground.Handler("GraphQL playground", "/query"))
@@ -58,6 +62,7 @@ func main() {
 	mux.Post("/query", func(w http.ResponseWriter, r *http.Request) {
 		srv.ServeHTTP(w, r)
 	})
+	mux.Handle("/graphiql", graphiqlHandler)
 
 	log.Printf("connect to http://localhost:%s/ for GraphQL playground", port)
 	log.Fatal(http.ListenAndServe(":"+port, mux))
