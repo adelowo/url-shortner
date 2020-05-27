@@ -69,7 +69,7 @@ func (p *postgresDriver) Create(ctx context.Context, val *datastore.URL) (string
 			_, err = p.inner.ExecContext(ctx,
 				"INSERT INTO url(code,redirect_url,created_at) VALUES($1,$2,$3)",
 				val.Code, val.RedirectURL.String(), val.CreatedAt)
-			return "", err
+			return val.Code, err
 		}
 
 		return "", err
