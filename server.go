@@ -12,12 +12,13 @@ import (
 	"github.com/adelowo/url-shortner/datastore/postgres"
 	"github.com/adelowo/url-shortner/graph"
 	"github.com/adelowo/url-shortner/graph/generated"
+	_ "github.com/lib/pq"
 )
 
 const defaultPort = "8080"
 
 func getDSN() string {
-	return os.Getenv("POSTGESQL_DSN")
+	return os.Getenv("POSTGRESQL_DSN")
 }
 
 func main() {

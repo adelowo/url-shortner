@@ -22,7 +22,7 @@ func New(dsn string) (datastore.Store, error) {
 		return nil, err
 	}
 
-	return &postgresDriver{inner: db}
+	return &postgresDriver{inner: db}, nil
 }
 
 type postgresDriver struct {
@@ -31,4 +31,12 @@ type postgresDriver struct {
 
 func (p *postgresDriver) Close() error {
 	return p.inner.Close()
+}
+
+func (p *postgresDriver) Find(ctx context.Context, code string) (*datastore.URL, error) {
+	return nil, nil
+}
+
+func (p *postgresDriver) Create(ctx context.Context, u datastore.URL) error {
+	return nil
 }
