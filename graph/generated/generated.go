@@ -49,7 +49,7 @@ type ComplexityRoot struct {
 
 	Query struct {
 		Todos func(childComplexity int) int
-		URL   func(childComplexity int, url string) int
+		URL   func(childComplexity int, code string) int
 	}
 
 	Todo struct {
@@ -77,7 +77,7 @@ type MutationResolver interface {
 }
 type QueryResolver interface {
 	Todos(ctx context.Context) ([]*model.Todo, error)
-	URL(ctx context.Context, url string) (*model.URL, error)
+	URL(ctx context.Context, code string) (*model.URL, error)
 }
 
 type executableSchema struct {
@@ -124,7 +124,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.URL(childComplexity, args["url"].(string)), true
+		return e.complexity.Query.URL(childComplexity, args["code"].(string)), true
 
 	case "Todo.done":
 		if e.complexity.Todo.Done == nil {
@@ -278,7 +278,7 @@ type User {
 
 type Query {
   todos: [Todo!]!
-  url(url: String!): URL!
+  url(code: String!): URL!
 }
 
 input NewTodo {
@@ -336,13 +336,13 @@ func (ec *executionContext) field_Query_url_args(ctx context.Context, rawArgs ma
 	var err error
 	args := map[string]interface{}{}
 	var arg0 string
-	if tmp, ok := rawArgs["url"]; ok {
+	if tmp, ok := rawArgs["code"]; ok {
 		arg0, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["url"] = arg0
+	args["code"] = arg0
 	return args, nil
 }
 
@@ -481,7 +481,7 @@ func (ec *executionContext) _Query_url(ctx context.Context, field graphql.Collec
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().URL(rctx, args["url"].(string))
+		return ec.resolvers.Query().URL(rctx, args["code"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)

@@ -20,8 +20,8 @@ func (r *queryResolver) Todos(ctx context.Context) ([]*model.Todo, error) {
 	panic(fmt.Errorf("not implemented"))
 }
 
-func (r *queryResolver) URL(ctx context.Context, url string) (*model.URL, error) {
-	panic(fmt.Errorf("not implemented"))
+func (r *queryResolver) URL(ctx context.Context, code string) (*model.URL, error) {
+	return handlers.FindURL(ctx, r.Database, code)
 }
 
 // Mutation returns generated.MutationResolver implementation.

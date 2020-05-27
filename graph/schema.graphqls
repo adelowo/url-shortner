@@ -16,7 +16,7 @@ type User {
 
 type Query {
   todos: [Todo!]!
-  url(url: String!): URL!
+  url(code: String!): URL!
 }
 
 input NewTodo {
