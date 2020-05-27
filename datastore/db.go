@@ -14,12 +14,13 @@ type postgresDriver struct {
 
 type Store interface {
 	io.Closer
-	Create(context.Context, URL) error
+	Create(context.Context, *URL) (string, error)
 	Find(ctx context.Context, code string) (*URL, error)
 }
 
 type URL struct {
-	Code        string
-	RedirectURL *url.URL
-	CreatedAt   time.Time
+	ID          int64     `json:"id"`
+	Code        string    `json:"code"`
+	RedirectURL *url.URL  `json:"redirect_url"`
+	CreatedAt   time.Time `json:"created_at"`
 }

@@ -14,6 +14,13 @@ type Todo struct {
 	User *User  `json:"user"`
 }
 
+type URL struct {
+	ID          *int    `json:"ID"`
+	Code        *string `json:"Code"`
+	RedirectURL *string `json:"RedirectURL"`
+	CreatedAt   *string `json:"CreatedAt"`
+}
+
 type User struct {
 	ID   string `json:"id"`
 	Name string `json:"name"`
