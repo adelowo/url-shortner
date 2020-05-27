@@ -34,7 +34,22 @@ func (p *postgresDriver) Close() error {
 	return p.inner.Close()
 }
 
-func (p *postgresDriver) Find(ctx context.Context, redirectURL string) (*datastore.URL, error) {
+func (p *postgresDriver) Find(ctx context.Context, code string) (*datastore.URL, error) {
+	var u = new(datastore.URL)
+
+	row := p.inner.QueryRowContext(ctx, "SELECT id,redirect_url,code FROM url WHERE code = $1 ", code)
+
+	var redirectURL string
+
+	if err := row.Scan(&u.ID, &redirectURL, &u.Code); err != nil {
+		return nil, err
+	}
+
+	u.RedirectURL, _ = url.Parse(redirectURL)
+	return u, nil
+}
+
+func (p *postgresDriver) findByURL(ctx context.Context, redirectURL string) (*datastore.URL, error) {
 	var u = new(datastore.URL)
 
 	row := p.inner.QueryRowContext(ctx, "SELECT id,redirect_url,code FROM url WHERE redirect_url = $1 ", redirectURL)
@@ -48,7 +63,7 @@ func (p *postgresDriver) Find(ctx context.Context, redirectURL string) (*datasto
 }
 
 func (p *postgresDriver) Create(ctx context.Context, val *datastore.URL) (string, error) {
-	u, err := p.Find(ctx, val.RedirectURL.String())
+	u, err := p.findByURL(ctx, val.RedirectURL.String())
 	if err != nil {
 		if err == sql.ErrNoRows {
 			_, err = p.inner.ExecContext(ctx,

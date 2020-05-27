@@ -12,6 +12,8 @@ import (
 	"github.com/adelowo/url-shortner/datastore/postgres"
 	"github.com/adelowo/url-shortner/graph"
 	"github.com/adelowo/url-shortner/graph/generated"
+	"github.com/adelowo/url-shortner/handlers"
+	"github.com/go-chi/chi"
 	_ "github.com/lib/pq"
 )
 
@@ -50,9 +52,13 @@ func main() {
 		Database: postgres,
 	}}))
 
-	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
-	http.Handle("/query", srv)
+	mux := chi.NewMux()
+	mux.Handle("/", playground.Handler("GraphQL playground", "/query"))
+	mux.Get("/{code}", handlers.Redirect(postgres))
+	mux.Post("/query", func(w http.ResponseWriter, r *http.Request) {
+		srv.ServeHTTP(w, r)
+	})
 
 	log.Printf("connect to http://localhost:%s/ for GraphQL playground", port)
-	log.Fatal(http.ListenAndServe(":"+port, nil))
+	log.Fatal(http.ListenAndServe(":"+port, mux))
 }
